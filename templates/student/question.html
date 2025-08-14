@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Lab Question - AI Lab Question Generator{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4><i class="bi bi-question-circle"></i> {{ topic.name }}</h4>
+                        <div class="text-muted">
+                            Category: {{ topic.category }} | 
+                            Difficulty: <span class="badge bg-{% if topic.difficulty == 'easy' %}success{% elif topic.difficulty == 'medium' %}warning{% else %}danger{% endif %}">{{ topic.difficulty.title() }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        {% if assignment.completed %}
+                            <span class="badge bg-success fs-6">
+                                <i class="bi bi-check-circle"></i> Completed
+                            </span>
+                        {% else %}
+                            <span class="badge bg-primary fs-6">
+                                <i class="bi bi-clock"></i> In Progress
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Assignment Info -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Assigned:</strong> {{ assignment.assigned_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                        <p class="mb-1"><strong>Question ID:</strong> #{{ question.id }}</p>
+                        <p class="mb-0"><strong>Variation:</strong> {{ question.variation_number }}</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-0 text-muted">
+                            <i class="bi bi-info-circle"></i> This question is uniquely assigned to you
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Question Content -->
+                <div class="card bg-dark border-primary shadow-lg">
+                    <div class="card-header bg-primary">
+                        <h5 class="mb-0"><i class="bi bi-stars"></i> Your Unique AI-Generated Lab Question</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="question-text">
+                            {{ question.question_text|replace('\n', '<br>')|safe }}
+                        </div>
+                        
+                        {% if question.expected_answer and assignment.completed %}
+                        <div class="mt-4 p-3 bg-success bg-opacity-10 border border-success rounded">
+                            <h6 class="text-success"><i class="bi bi-lightbulb"></i> Expected Answer/Approach:</h6>
+                            <div class="small">
+                                {{ question.expected_answer|replace('\n', '<br>')|safe }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Topic Description -->
+                {% if topic.description %}
+                <div class="mt-4">
+                    <h6><i class="bi bi-info-circle"></i> Topic Information</h6>
+                    <p class="text-muted">{{ topic.description }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                    
+                    {% if not assignment.completed %}
+                    <form method="POST" action="{{ url_for('student.complete_question', assignment_id=assignment.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-success" onclick="return confirm('Mark this question as completed?')">
+                            <i class="bi bi-check-circle"></i> Mark as Completed
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="text-success">
+                        <i class="bi bi-check-circle-fill"></i> Question Completed
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions Card -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-list-check"></i> Lab Instructions</h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>Read the question carefully and understand all requirements</li>
+                    <li>Implement your solution following best practices for the {{ topic.category }} domain</li>
+                    <li>Test your implementation thoroughly</li>
+                    <li>Document your code and approach clearly</li>
+                    <li>Mark the question as completed when you finish</li>
+                    {% if not assignment.completed %}
+                    <li class="text-warning"><strong>Note:</strong> You can view the expected answer after marking the question as completed</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Fair Assessment Notice -->
+        <div class="alert alert-info mt-4">
+            <i class="bi bi-shield-check"></i>
+            <strong>Fair Assessment:</strong> This question has been uniquely generated for you using AI to ensure fair evaluation while maintaining equivalent difficulty with other students' questions.
+        </div>
+    </div>
+</div>
+{% endblock %}

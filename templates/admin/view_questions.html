@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}View Questions - AI Lab Question Generator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2><i class="bi bi-list"></i> Questions for: {{ topic.name }}</h2>
+                <div class="text-muted">
+                    Category: {{ topic.category }} | 
+                    Difficulty: <span class="badge bg-{% if topic.difficulty == 'easy' %}success{% elif topic.difficulty == 'medium' %}warning{% else %}danger{% endif %}">{{ topic.difficulty.title() }}</span>
+                    | Total Questions: {{ questions|length }}
+                </div>
+            </div>
+            <div>
+                <a href="{{ url_for('admin.generate_questions', topic_id=topic.id) }}" class="btn btn-success btn-lg me-2">
+                    <i class="bi bi-magic"></i> Generate More Questions
+                </a>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% if questions %}
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-question-circle"></i> Generated Questions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for question in questions %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 {% if question.is_assigned %}border-warning{% endif %}">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">Variation #{{ question.variation_number }}</small>
+                                    {% if question.is_assigned %}
+                                        <span class="badge bg-warning">Assigned</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Available</span>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">{{ question.question_text }}</p>
+                                    {% if question.expected_answer %}
+                                        <div class="mt-3">
+                                            <h6 class="text-muted">Expected Answer:</h6>
+                                            <p class="small bg-dark p-2 rounded">{{ question.expected_answer }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-muted">
+                                        Created: {{ question.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-question-circle-fill display-1 text-muted"></i>
+                    <h4 class="mt-3">No Questions Generated Yet</h4>
+                    <p class="text-muted">Generate AI-powered question variations for this topic.</p>
+                    <a href="{{ url_for('admin.generate_questions', topic_id=topic.id) }}" class="btn btn-primary">
+                        <i class="bi bi-magic"></i> Generate Questions
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Statistics -->
+{% if questions %}
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card bg-success">
+            <div class="card-body text-center">
+                <h4>{{ questions|selectattr('is_assigned', 'equalto', false)|list|length }}</h4>
+                <p class="mb-0">Available</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning">
+            <div class="card-body text-center">
+                <h4>{{ questions|selectattr('is_assigned', 'equalto', true)|list|length }}</h4>
+                <p class="mb-0">Assigned</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-primary">
+            <div class="card-body text-center">
+                <h4>{{ questions|length }}</h4>
+                <p class="mb-0">Total</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

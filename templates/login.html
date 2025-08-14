@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}Login - AI Lab Question Generator{% endblock %}
+
+{% block content %}
+<style>
+.login-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    margin: -1rem -15px;
+    padding: 2rem 15px;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.login-header {
+    background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    border: none;
+}
+
+.form-control {
+    border-radius: 15px;
+    border: 2px solid #e9ecef;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-control:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 20px rgba(13,110,253,0.2);
+    background: white;
+}
+
+.btn-login {
+    background: linear-gradient(45deg, var(--bs-primary), var(--bs-info));
+    border: none;
+    border-radius: 15px;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: white;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(13,110,253,0.4);
+    color: white;
+}
+
+.demo-card {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.demo-account {
+    background: rgba(13,110,253,0.05);
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid rgba(13,110,253,0.1);
+    transition: all 0.3s ease;
+}
+
+.demo-account:hover {
+    background: rgba(13,110,253,0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13,110,253,0.2);
+}
+
+.icon-large {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.glow-text {
+    text-shadow: 0 0 20px rgba(255,255,255,0.5);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+    color: white;
+}
+</style>
+
+<div class="login-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- Main Login Card -->
+            <div class="col-lg-5 col-md-7">
+                <div class="login-card fade-in-up">
+                    <div class="login-header">
+                        <i class="bi bi-robot icon-large"></i>
+                        <h2 class="glow-text mb-0">AI Lab Generator</h2>
+                        <p class="mb-0 opacity-75">Intelligent Question Generation Platform</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="POST" action="{{ url_for('auth.login') }}">
+                            <div class="mb-4">
+                                <label for="username" class="form-label fw-bold">
+                                    <i class="bi bi-person-fill me-2 text-primary"></i>Username
+                                </label>
+                                <input type="text" class="form-control" id="username" name="username" 
+                                       placeholder="Enter your username" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-bold">
+                                    <i class="bi bi-lock-fill me-2 text-primary"></i>Password
+                                </label>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       placeholder="Enter your password" required>
+                            </div>
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-login">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration Card -->
+            <div class="col-lg-5 col-md-7 mt-4 mt-lg-0">
+                <div class="login-card fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="card-header bg-success text-white text-center">
+                        <h4><i class="bi bi-person-plus-fill me-2"></i>New Student Registration</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="POST" action="{{ url_for('auth.register') }}">
+                            <div class="mb-3">
+                                <label for="reg_username" class="form-label fw-bold">
+                                    <i class="bi bi-person me-2 text-success"></i>Username
+                                </label>
+                                <input type="text" class="form-control" id="reg_username" name="username" 
+                                       placeholder="Choose a username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reg_email" class="form-label fw-bold">
+                                    <i class="bi bi-envelope me-2 text-success"></i>Email
+                                </label>
+                                <input type="email" class="form-control" id="reg_email" name="email" 
+                                       placeholder="your.email@example.com" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reg_password" class="form-label fw-bold">
+                                    <i class="bi bi-key me-2 text-success"></i>Password
+                                </label>
+                                <input type="password" class="form-control" id="reg_password" name="password" 
+                                       placeholder="Create a secure password" required>
+                            </div>
+                            <input type="hidden" name="role" value="student">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-mortarboard-fill me-2"></i>Join as Student
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Accounts Section -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-lg-10">
+                <div class="demo-card fade-in-up" style="animation-delay: 0.4s;">
+                    <div class="card-header bg-transparent border-0 text-center">
+                        <h5 class="text-dark mb-0">
+                            <i class="bi bi-info-circle-fill me-2 text-info"></i>Demo Accounts & Platform Features
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Demo Accounts -->
+                            <div class="col-md-6">
+                                <h6 class="text-primary mb-3">
+                                    <i class="bi bi-key-fill me-2"></i>Try Demo Accounts
+                                </h6>
+                                <div class="demo-account mb-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-shield-fill-check text-warning me-2 fs-5"></i>
+                                        <h6 class="mb-0 text-dark">Administrator</h6>
+                                    </div>
+                                    <div class="small text-muted">Username: <span class="text-primary fw-bold">admin</span></div>
+                                    <div class="small text-muted">Password: <span class="text-primary fw-bold">admin123</span></div>
+                                    <div class="small text-success mt-1">✓ Create topics & generate AI questions</div>
+                                </div>
+                                <div class="demo-account">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-mortarboard-fill text-primary me-2 fs-5"></i>
+                                        <h6 class="mb-0 text-dark">Student Access</h6>
+                                    </div>
+                                    <div class="small text-success mt-1">✓ Register as new student (form above)</div>
+                                    <div class="small text-success">✓ Get unique AI-generated lab questions</div>
+                                </div>
+                            </div>
+
+                            <!-- Platform Features -->
+                            <div class="col-md-6">
+                                <h6 class="text-primary mb-3">
+                                    <i class="bi bi-stars me-2"></i>Platform Features
+                                </h6>
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="feature-icon bg-success">
+                                            <i class="bi bi-magic"></i>
+                                        </div>
+                                        <h6 class="small text-dark">AI Generation</h6>
+                                        <p class="text-muted small">Unique questions for every student</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="feature-icon bg-info">
+                                            <i class="bi bi-shield-check"></i>
+                                        </div>
+                                        <h6 class="small text-dark">Fair Assessment</h6>
+                                        <p class="text-muted small">Same difficulty, different content</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="feature-icon bg-warning">
+                                            <i class="bi bi-people"></i>
+                                        </div>
+                                        <h6 class="small text-dark">Multi-User</h6>
+                                        <p class="text-muted small">Admin & student roles</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

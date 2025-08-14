@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - AI Lab Question Generator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="bi bi-house"></i> Student Dashboard</h2>
+        <p class="text-muted">Welcome, {{ session.username }}! Select a topic to get your unique lab question.</p>
+    </div>
+</div>
+
+<!-- My Assignments -->
+{% if assignments %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-bookmark-check"></i> My Assignments</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for assignment, topic, question in assignments %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card {% if assignment.completed %}border-success{% else %}border-primary{% endif %}">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">{{ topic.name }}</h6>
+                                {% if assignment.completed %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                    <span class="badge bg-primary">In Progress</span>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <p class="small text-muted mb-2">
+                                    Category: {{ topic.category }} | 
+                                    Difficulty: <span class="badge bg-{% if topic.difficulty == 'easy' %}success{% elif topic.difficulty == 'medium' %}warning{% else %}danger{% endif %}">{{ topic.difficulty.title() }}</span>
+                                </p>
+                                <p class="mb-3">{{ question.question_text[:150] }}{% if question.question_text|length > 150 %}...{% endif %}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">Assigned: {{ assignment.assigned_at.strftime('%Y-%m-%d') }}</small>
+                                    <a href="{{ url_for('student.view_question', assignment_id=assignment.id) }}" class="btn btn-primary btn-sm">
+                                        {% if assignment.completed %}
+                                            <i class="bi bi-eye"></i> Review
+                                        {% else %}
+                                            <i class="bi bi-play"></i> Continue
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Available Topics -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-bookmark"></i> Available Topics</h5>
+            </div>
+            <div class="card-body">
+                {% if topics %}
+                    <div class="row">
+                        {% for topic in topics %}
+                        {% set user_has_assignment = assignments|selectattr('1.id', 'equalto', topic.id)|list|length > 0 %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 {% if user_has_assignment %}bg-secondary{% endif %}">
+                                <div class="card-header">
+                                    <h6 class="mb-0">{{ topic.name }}</h6>
+                                    <div class="small text-muted">{{ topic.category }}</div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text small">{{ topic.description[:100] }}{% if topic.description|length > 100 %}...{% endif %}</p>
+                                    
+                                    <div class="mb-2">
+                                        <span class="badge bg-{% if topic.difficulty == 'easy' %}success{% elif topic.difficulty == 'medium' %}warning{% else %}danger{% endif %}">
+                                            {{ topic.difficulty.title() }}
+                                        </span>
+                                    </div>
+                                    
+                                    {% if user_has_assignment %}
+                                        <div class="text-center">
+                                            <span class="text-muted small">
+                                                <i class="bi bi-check-circle"></i> Already Assigned
+                                            </span>
+                                        </div>
+                                    {% else %}
+                                        <div class="text-center">
+                                            <a href="{{ url_for('student.get_question', topic_id=topic.id) }}" 
+                                               class="btn btn-primary">
+                                                <i class="bi bi-lightning-charge-fill"></i> Get My Unique Question
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-muted">
+                                        {{ topic.questions|length }} questions available
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-bookmark-x display-1 text-muted"></i>
+                        <h5 class="mt-3">No Topics Available</h5>
+                        <p class="text-muted">Your instructor hasn't created any topics yet. Please check back later.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+{% if assignments %}
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card bg-primary">
+            <div class="card-body text-center">
+                <h4>{{ assignments|length }}</h4>
+                <p class="mb-0">Total Assignments</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success">
+            <div class="card-body text-center">
+                <h4>{{ assignments|selectattr('0.completed', 'equalto', true)|list|length }}</h4>
+                <p class="mb-0">Completed</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning">
+            <div class="card-body text-center">
+                <h4>{{ assignments|selectattr('0.completed', 'equalto', false)|list|length }}</h4>
+                <p class="mb-0">In Progress</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

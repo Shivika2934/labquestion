@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Questions - AI Lab Question Generator{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-primary shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="bi bi-robot"></i> AI Question Generator: {{ topic.name }}</h4>
+                <div class="small">
+                    Category: {{ topic.category }} | 
+                    Difficulty: <span class="badge bg-light text-dark">{{ topic.difficulty.title() }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="base_question" class="form-label">Base Question *</label>
+                        <textarea class="form-control" id="base_question" name="base_question" rows="4" required
+                                  placeholder="Enter a sample lab question that AI will use to generate variations. For example: 'Implement a binary search tree and demonstrate insertion, deletion, and traversal operations.'"></textarea>
+                        <div class="form-text">
+                            Provide a clear, well-structured question that represents the type of lab work you want students to perform.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="num_variations" class="form-label">Number of Variations *</label>
+                        <select class="form-select" id="num_variations" name="num_variations" required>
+                            <option value="5">5 variations</option>
+                            <option value="10" selected>10 variations</option>
+                            <option value="15">15 variations</option>
+                            <option value="20">20 variations</option>
+                            <option value="25">25 variations</option>
+                            <option value="30">30 variations</option>
+                        </select>
+                        <div class="form-text">
+                            Generate enough variations to ensure each student gets a unique question.
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Dashboard
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg" id="generateBtn">
+                            <i class="bi bi-magic" id="generateIcon"></i> 
+                            <span id="generateText">Generate AI Questions</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Existing Questions -->
+        {% if topic.questions %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-list"></i> Existing Questions ({{ topic.questions|length }})</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">This topic already has {{ topic.questions|length }} questions generated.</p>
+                <a href="{{ url_for('admin.view_questions', topic_id=topic.id) }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-eye"></i> View Existing Questions
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- AI Generation Info -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-robot"></i> AI Question Generation</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-2"><strong>How it works:</strong></p>
+                <ul class="mb-3">
+                    <li>AI analyzes your base question</li>
+                    <li>Generates unique variations maintaining the same difficulty</li>
+                    <li>Ensures each question tests the same core concepts</li>
+                    <li>Creates equivalent but distinct challenges for fair assessment</li>
+                </ul>
+                <div class="alert alert-info">
+                    <i class="bi bi-robot"></i>
+                    <strong>AI Tip:</strong> Make your base question specific and detailed for better AI-generated variations. The more context you provide, the more unique and relevant the variations will be.
+                </div>
+                
+                <div class="alert alert-success">
+                    <i class="bi bi-shield-check"></i>
+                    <strong>Fair Assessment:</strong> Each generated question will test the same concepts but with unique details, ensuring fair evaluation while preventing plagiarism.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const generateBtn = document.getElementById('generateBtn');
+    const generateIcon = document.getElementById('generateIcon');
+    const generateText = document.getElementById('generateText');
+    
+    form.addEventListener('submit', function(e) {
+        // Prevent double submission
+        if (generateBtn.disabled) {
+            e.preventDefault();
+            return;
+        }
+        
+        // Show loading state
+        generateBtn.disabled = true;
+        generateIcon.className = 'bi bi-hourglass-split';
+        generateText.textContent = 'Generating Questions...';
+        
+        // Add loading animation
+        generateBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Generating Questions...';
+    });
+});
+</script>
+{% endblock %}
